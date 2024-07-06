@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Lista</title>
+    <link rel="stylesheet" href="style.css"> <!-- Incluye tus estilos aquí -->
+    <script src="https://kit.fontawesome.com/707464f25e.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <!-- FORMULARIO LISTA -->
+    <div id="container" class="container">
+        <h1>Formulario Lista</h1>
+        <table id="tablaEmpleados">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Fecha de nacimiento</th>
+                    <th>Dni</th>
+                    <th>Pais de Origen</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button id="addElement">Agregar Elemento</button>
+    </div>
+    
+    <!-- FORMULARIO ABM -->
+    <div id="form_container" class="form">
+        <h1>Formulario ABM</h1>
+        <form id="formulario">
+            <label for="id" id="lbl_id">ID:</label>
+            <input type="text" id="id" name="id" readonly>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" name="apellido" required>
+            <label for="fechaNacimiento">Fecha nacimiento:</label>
+            <input type="text" id="fechaNacimiento" name="fechaNacimiento" required>
+            <label for="tipo">Tipo:</label>
+            <select id="tipo_persona" name="tipo">
+                <option value="">Seleccione un tipo</option>
+                <option value="ciudadano">Ciudadano</option>
+                <option value="extranjero">Extranjero</option>
+            </select>
+            <label for="dni" id="lbl_dni">Dni:</label>
+            <input type="text" id="dni" name="dni" required>
+            <label for="paisOrigen" id="lbl_paisOrigen">Pais de origen:</label>
+            <input type="text" id="paisOrigen" name="paisOrigen" required>
+            <button id="acept">Aceptar</button>
+            <!-- <button id="update">Modificar</button> -->
+            <button id="cancel">Cancelar</button>
+        </form>
+    </div>
+
+   <!-- Contenedor del Spinner -->
+    <div id="spinnerContainer">
+        <div>
+            <i class="fas fa-spinner fa-3x"></i> <!-- Icono de Spinner de Font Awesome -->
+            <!-- <p>Cargando...</p> -->
+        </div>
+    </div>
+
+
+
+
+    <script src="main.js"></script> <!-- Incluye tus scripts aquí -->
+</body>
+</html>

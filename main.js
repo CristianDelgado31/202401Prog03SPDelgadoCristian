@@ -204,8 +204,15 @@ document.getElementById('acept').addEventListener('click', function(event) {
         } else if (tipo === 'extranjero') {
             let paisOrigen = document.getElementById('paisOrigen').value;
 
-            if(typeof paisOrigen !== 'string') {
+            if (typeof paisOrigen !== 'string') {
                 alert('El país de origen debe ser un texto');
+                return;
+            }
+
+            // Validar que el país de origen solo contenga letras y espacios
+            paisOrigen = paisOrigen.trim().replace(/[^a-zA-Z\s]/g, '');
+            if (paisOrigen === '') {
+                alert('El país de origen debe contener solo letras y espacios');
                 return;
             }
 
@@ -227,6 +234,12 @@ document.getElementById('acept').addEventListener('click', function(event) {
         console.log("Modificar persona");
         let personaActualizada;
         if (tipo === 'ciudadano') {
+            let dni = document.getElementById('dni').value;
+            if(typeof dni !== 'number' || isNaN(dni) || dni <= 0) {
+                alert('El DNI debe ser un número');
+                return;
+            }
+
             personaActualizada = {
                 id: id,
                 nombre: document.getElementById('nombre').value,
@@ -236,6 +249,20 @@ document.getElementById('acept').addEventListener('click', function(event) {
             };
             actualizarPersona(personaActualizada);
         } else if (tipo === 'extranjero') {
+            let paisOrigen = document.getElementById('paisOrigen').value;
+
+            if (typeof paisOrigen !== 'string') {
+                alert('El país de origen debe ser un texto');
+                return;
+            }
+
+            // Validar que el país de origen solo contenga letras y espacios
+            paisOrigen = paisOrigen.trim().replace(/[^a-zA-Z\s]/g, '');
+            if (paisOrigen === '') {
+                alert('El país de origen debe contener solo letras y espacios');
+                return;
+            }
+
             personaActualizada = {
                 id: id,
                 nombre: document.getElementById('nombre').value,

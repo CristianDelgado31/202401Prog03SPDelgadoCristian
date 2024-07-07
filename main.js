@@ -43,6 +43,9 @@ class Extranjero extends Persona {
 }
 
 let personas = [];
+let flagAgregar = false;
+let flagModificar = false;
+let flagEliminar = false;
 
 
 // Carga de datos en la tabla del index.html
@@ -108,6 +111,11 @@ document.getElementById('addElement').addEventListener('click', function(event) 
     document.getElementById('id').style.display = 'none';
     ResetSelectorTipo();
 
+    //
+    flagAgregar = true;
+    flagModificar = false;
+    flagEliminar = false;
+
 });
 
 
@@ -146,6 +154,14 @@ document.getElementById('cancel').addEventListener('click', function(event) {
     document.getElementById("tipo_persona").disabled = false;
     ResetSelectorTipo();
     document.getElementById('formulario').reset();
+    flagAgregar = false;
+    flagModificar = false;
+    flagEliminar = false;
+    document.getElementById('nombre').disabled = false;
+    document.getElementById('apellido').disabled = false;
+    document.getElementById('fechaNacimiento').disabled = false;
+    document.getElementById('dni').disabled = false;
+    document.getElementById('paisOrigen').disabled = false;
 });
 
 function convertirFechaNumerica(fecha) {
@@ -171,27 +187,17 @@ document.getElementById('acept').addEventListener('click', function(event) {
     let tipo = document.getElementById('tipo_persona').value; // Obtener el tipo de persona (cliente o empleado)
     let fecha = document.getElementById('fechaNacimiento').value;
     let fechaIngresada = convertirFechaNumerica(fecha);
-
-    //validaciones nombre, apellido
-    if(document.getElementById('nombre').value === '' || document.getElementById('apellido').value === '') {
-        alert('Debe completar los campos Nombre y Apellido');
-        return;
-    }
+    
     
     if(fechaIngresada === 'Formato de fecha inválido. Ingrese AAAAMMDD.') {
         alert(fechaIngresada);
         return;
     }
 
-    if (document.getElementById('id').style.display === 'none') {
+    if (flagAgregar === true) {
         // Estás en la operación de agregar persona
+        console.log("Agregar persona");
         if (tipo === 'ciudadano') {
-            let dni = document.getElementById('dni').value;
-            if(typeof dni !== 'number' || isNaN(dni)) {
-                alert('El DNI debe ser un número');
-                return;
-            }
-
             let nuevoCiudadano = {
                 id: null,
                 nombre: document.getElementById('nombre').value,
@@ -202,20 +208,6 @@ document.getElementById('acept').addEventListener('click', function(event) {
             FinalizarAgregar(nuevoCiudadano);
             MostrarSpinner(); // Mostrar el Spinner al hacer clic en "Aceptar"
         } else if (tipo === 'extranjero') {
-            let paisOrigen = document.getElementById('paisOrigen').value;
-
-            if (typeof paisOrigen !== 'string') {
-                alert('El país de origen debe ser un texto');
-                return;
-            }
-
-            // Validar que el país de origen solo contenga letras y espacios
-            paisOrigen = paisOrigen.trim().replace(/[^a-zA-Z\s]/g, '');
-            if (paisOrigen === '') {
-                alert('El país de origen debe contener solo letras y espacios');
-                return;
-            }
-
             let nuevoExtranjero = {
                 id: null,
                 nombre: document.getElementById('nombre').value,
@@ -229,17 +221,11 @@ document.getElementById('acept').addEventListener('click', function(event) {
             console.error('Tipo de persona no reconocido:', tipo);
         }
     } 
-    else if(document.getElementById('id').style.display === 'block' && document.getElementById('nombre').disabled === false){
+    else if(flagModificar === true){
         // Estás en la operación de modificar persona
         console.log("Modificar persona");
         let personaActualizada;
         if (tipo === 'ciudadano') {
-            let dni = document.getElementById('dni').value;
-            if(typeof dni !== 'number' || isNaN(dni) || dni <= 0) {
-                alert('El DNI debe ser un número');
-                return;
-            }
-
             personaActualizada = {
                 id: id,
                 nombre: document.getElementById('nombre').value,
@@ -249,20 +235,6 @@ document.getElementById('acept').addEventListener('click', function(event) {
             };
             actualizarPersona(personaActualizada);
         } else if (tipo === 'extranjero') {
-            let paisOrigen = document.getElementById('paisOrigen').value;
-
-            if (typeof paisOrigen !== 'string') {
-                alert('El país de origen debe ser un texto');
-                return;
-            }
-
-            // Validar que el país de origen solo contenga letras y espacios
-            paisOrigen = paisOrigen.trim().replace(/[^a-zA-Z\s]/g, '');
-            if (paisOrigen === '') {
-                alert('El país de origen debe contener solo letras y espacios');
-                return;
-            }
-
             personaActualizada = {
                 id: id,
                 nombre: document.getElementById('nombre').value,
@@ -274,16 +246,24 @@ document.getElementById('acept').addEventListener('click', function(event) {
         }
         MostrarSpinner(); // Mostrar el Spinner al hacer clic en "Aceptar"
     } 
-    else {
+    else if(flagEliminar === true){
         // Estás en la operación de eliminar persona
         console.log("Eliminar persona con ID:", id);
         eliminarPersona(id);
         MostrarSpinner(); // Mostrar el Spinner al hacer clic en "Aceptar"
+    } 
+    else {
+        console.error('Operación no reconocida');
     }
+
+    console.log('Flag agregar:', flagAgregar);
+    console.log('Flag modificar:', flagModificar);
+    console.log('Flag eliminar:', flagEliminar);
 });
 
 
 function FinalizarAgregar(nuevoRegistro) {
+    flagAgregar = false;
     AgregarPersonaFetch(nuevoRegistro)
         .then(data => {
             // Operación exitosa
@@ -348,6 +328,9 @@ function MostrarAdvertencia() {
 
 //MODIFICAR
 function abrirFormularioModificar(persona) {
+    flagModificar = true;
+    flagAgregar = false;
+    flagEliminar = false;
     console.log('Modificar persona:', persona);
     document.getElementById('container').style.display = 'none';
 
@@ -429,6 +412,8 @@ function actualizarPersona(personaActualizada) {
         OcultarSpinner();
         OcultarFormularioABM();
         MostrarFormularioLista();
+        flagModificar = false;
+
     })
     .catch(error => {
         console.error('Error en actualizarPersona:', error);
@@ -437,12 +422,16 @@ function actualizarPersona(personaActualizada) {
         OcultarFormularioABM();
         MostrarFormularioLista();
         MostrarAdvertencia();
+        flagModificar = false;
     });
 }
 
 
 //ELIMINAR
 function abrirFormularioEliminar(persona) {
+    flagEliminar = true;
+    flagAgregar = false;
+    flagModificar = false;
     console.log('Eliminar persona:', persona);
     document.getElementById('container').style.display = 'none';
 
@@ -486,13 +475,14 @@ function abrirFormularioEliminar(persona) {
 }
 
 
-function eliminarPersona(personaAEliminar) {
+function eliminarPersona(personaAEliminar) { //personaAEliminar es el ID de la persona a eliminar
     // Lógica para enviar la solicitud de eliminación al servidor
     fetch(`https://examenesutn.vercel.app/api/PersonaCiudadanoExtranjero`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
         },
+        body: JSON.stringify({ id: personaAEliminar }) // Convierte el objeto a JSON
     })
     .then(response => {
         if (!response.ok) {
@@ -505,7 +495,12 @@ function eliminarPersona(personaAEliminar) {
         console.log('Persona eliminada:', personaAEliminar);
 
         // Filtrar la persona eliminada de la lista local
-        personas = personas.filter(persona => persona.id != personaAEliminar.id);
+        // 
+        personas.forEach((persona, index) => {
+            if(persona.id == personaAEliminar) {
+                personas.splice(index, 1); // Eliminar la persona de la lista
+            }
+        });
 
         // Resetear y habilitar los campos del formulario
         document.getElementById('formulario').reset();
@@ -521,6 +516,7 @@ function eliminarPersona(personaAEliminar) {
         OcultarSpinner();
         OcultarFormularioABM();
         MostrarFormularioLista();
+        flagEliminar = false;
     })
     .catch(error => {
         console.error('Error en eliminarPersona:', error);
@@ -536,5 +532,6 @@ function eliminarPersona(personaAEliminar) {
         OcultarFormularioABM();
         MostrarFormularioLista();
         MostrarAdvertencia();
+        flagEliminar = false;
     });
 }
